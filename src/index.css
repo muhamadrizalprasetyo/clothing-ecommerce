@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+  color: #1a202c;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Utility classes for micro-interactions */
+@layer utilities {
+  /* Anti-gravity floating effect */
+  .float-hover {
+    @apply transition-transform duration-300 ease-out;
+  }
+  
+  .float-hover:hover {
+    @apply -translate-y-2;
+  }
+  
+  /* Active states */
+  .btn-press {
+    @apply transition-all duration-150;
+  }
+  
+  .btn-press:active {
+    @apply scale-95;
+  }
+  
+  /* Focus ring */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-navy-200 focus:ring-offset-2;
+  }
+  
+  /* Card shadow transition */
+  .card-shadow {
+    @apply transition-shadow duration-300;
+  }
+  
+  .card-shadow:hover {
+    @apply shadow-lg shadow-navy-100/50;
+  }
+}
+
+/* Selection color */
+::selection {
+  background-color: #1a365d;
+  color: white;
+}
+
+/* Image loading placeholder */
+img {
+  background-color: #f7fafc;
+}
