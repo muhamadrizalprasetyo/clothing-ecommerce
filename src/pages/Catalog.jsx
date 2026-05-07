@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { ShoppingBag, Heart, Filter, X, Search, Grid3X3, LayoutList, ChevronDown } from 'lucide-react';
 import { products, categories, formatPrice } from '../data/mockData';
 
 const Catalog = () => {
-  const { addToCart, toggleWishlist, isInWishlist, showToast } = useStore();
+  const navigate = useNavigate();
+  const { addToCart, toggleWishlist, isInWishlist, showToast, isLoggedIn } = useStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
@@ -48,8 +49,25 @@ const Catalog = () => {
     return result;
   }, [searchQuery, selectedCategory, sortBy, priceRange]);
 
+  // Check auth before allowing actions - redirect to login if guest
+  const requireAuth = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return false;
+    }
+    return true;
+  };
+
   const handleAddToCart = (product) => {
+    if (!requireAuth()) return;
     addToCart(product, product.sizes[0], product.colors[0], 1);
+  };
+
+  const handleProductClick = (e) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      navigate('/login');
+    }
   };
 
   const handleSearch = (e) => {
@@ -195,7 +213,7 @@ const Catalog = () => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <button
-                    onClick={() => toggleWishlist(product)}
+                    onClick={() => { if (requireAuth()) toggleWishlist(product); }}
                     className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-200 hover:bg-white hover:scale-110 active:scale-95"
                   >
                     <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
@@ -209,7 +227,7 @@ const Catalog = () => {
 
                 {/* Info */}
                 <div className="p-4 flex-1 flex flex-col">
-                  <Link to={`/product/${product.id}`}>
+                  <Link to={`/product/${product.id}`} onClick={handleProductClick}>
                     <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-navy-600 transition-colors">{product.name}</h3>
                     <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                   </Link>

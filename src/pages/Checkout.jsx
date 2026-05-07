@@ -1,18 +1,28 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
-import { CreditCard, Truck, Wallet, Check, Sparkles } from 'lucide-react';
+import { CreditCard, Truck, Wallet, Sparkles, Building2, QrCode, Banknote } from 'lucide-react';
 import { formatPrice, calculateTotal } from '../data/mockData';
+
+// Payment method configurations
+const PAYMENT_METHODS = [
+  { id: 'bca_va', name: 'BCA Virtual Account', icon: Building2, prefix: '88000', color: 'bg-blue-600' },
+  { id: 'mandiri_va', name: 'Mandiri Virtual Account', icon: Building2, prefix: '89000', color: 'bg-yellow-600' },
+  { id: 'bri_va', name: 'BRI Virtual Account', icon: Building2, prefix: '87000', color: 'bg-blue-700' },
+  { id: 'qris', name: 'QRIS (Gopay, OVO, Dana, ShopeePay)', icon: QrCode, color: 'bg-navy-600' },
+  { id: 'cozzy_cash', name: 'Cozzy Cash (Wallet)', icon: Wallet, color: 'bg-navy-600' },
+];
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, currentUser, createOrder } = useStore();
-  const [useCozzyCash, setUseCozzyCash] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('transfer');
+  const [paymentMethod, setPaymentMethod] = useState('bca_va');
 
-  const { subtotal, shipping, discount, total } = calculateTotal(cart, useCozzyCash, currentUser?.cozzyCash);
+  // Calculate totals
+  const { subtotal, shipping, discount, total } = calculateTotal(cart, false, 0);
 
+  // Form state
   const [formData, setFormData] = useState({
     fullName: currentUser?.name || '',
     email: currentUser?.email || '',
@@ -22,25 +32,49 @@ const Checkout = () => {
     postalCode: currentUser?.address?.postalCode || ''
   });
 
+  // Validation state
+  const [touched, setTouched] = useState({});
+
+  // Check if all shipping fields are filled
+  const isFormValid = useMemo(() => {
+    return formData.fullName && formData.email && formData.phone && 
+           formData.address && formData.city && formData.postalCode;
+  }, [formData]);
+
+  // Check Cozzy Cash balance
+  const cozzyCashBalance = currentUser?.cozzyCash || 0;
+  const isCozzyCashSufficient = cozzyCashBalance >= total;
+  const isCozzyCashSelected = paymentMethod === 'cozzy_cash';
+
+  // Check if checkout can proceed
+  const canCheckout = isFormValid && (!isCozzyCashSelected || isCozzyCashSufficient);
+
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setTouched(prev => ({ ...prev, [e.target.name]: true }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!canCheckout) return;
+
     setIsProcessing(true);
     
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    const selectedMethod = PAYMENT_METHODS.find(m => m.id === paymentMethod);
+    
     const order = createOrder({
       items: cart,
       shipping: { ...formData },
-      paymentMethod,
+      paymentMethod: selectedMethod?.name || paymentMethod,
+      paymentMethodId: paymentMethod,
       subtotal,
       shippingCost: shipping,
-      discount,
-      total,
-      usedCozzyCash: useCozzyCash ? Math.min(currentUser?.cozzyCash || 0, subtotal + shipping) : 0
+      discount: isCozzyCashSelected ? total : 0,
+      total: isCozzyCashSelected ? 0 : total,
+      usedCozzyCash: isCozzyCashSelected ? total : 0
     });
     
     setIsProcessing(false);
@@ -51,6 +85,14 @@ const Checkout = () => {
     navigate('/cart');
     return null;
   }
+
+  const getInputClass = (field) => {
+    const baseClass = "w-full px-4 py-3 rounded-xl border transition-all duration-200 focus:ring-2 focus:ring-navy-100";
+    if (touched[field] && !formData[field]) {
+      return `${baseClass} border-red-300 focus:border-red-500 focus:ring-red-100`;
+    }
+    return `${baseClass} border-gray-200 focus:border-navy-600`;
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -63,35 +105,198 @@ const Checkout = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Shipping */}
               <div className="p-6 bg-gray-50 rounded-2xl">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><Truck className="w-5 h-5" /> Shipping Information</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-navy-600" /> 
+                  Shipping Information
+                </h2>
                 <div className="space-y-4">
-                  <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100" required />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100" required />
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100" required />
+                  <div>
+                    <input 
+                      type="text" 
+                      name="fullName" 
+                      value={formData.fullName} 
+                      onChange={handleChange} 
+                      placeholder="Full Name *" 
+                      className={getInputClass('fullName')}
+                      required 
+                    />
+                    {touched.fullName && !formData.fullName && (
+                      <p className="text-red-500 text-sm mt-1">Full name is required</p>
+                    )}
                   </div>
-                  <textarea name="address" value={formData.address} onChange={handleChange} placeholder="Full Address" rows={3} className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100 resize-none" required />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100" required />
-                    <input type="text" name="postalCode" value={formData.postalCode} onChange={handleChange} placeholder="Postal Code" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-600 focus:ring-2 focus:ring-navy-100" required />
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <input 
+                        type="email" 
+                        name="email" 
+                        value={formData.email} 
+                        onChange={handleChange} 
+                        placeholder="Email *" 
+                        className={getInputClass('email')}
+                        required 
+                      />
+                      {touched.email && !formData.email && (
+                        <p className="text-red-500 text-sm mt-1">Email is required</p>
+                      )}
+                    </div>
+                    <div>
+                      <input 
+                        type="tel" 
+                        name="phone" 
+                        value={formData.phone} 
+                        onChange={handleChange} 
+                        placeholder="Phone Number *" 
+                        className={getInputClass('phone')}
+                        required 
+                      />
+                      {touched.phone && !formData.phone && (
+                        <p className="text-red-500 text-sm mt-1">Phone is required</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <textarea 
+                      name="address" 
+                      value={formData.address} 
+                      onChange={handleChange} 
+                      placeholder="Full Address *" 
+                      rows={3} 
+                      className={`${getInputClass('address')} resize-none`}
+                      required 
+                    />
+                    {touched.address && !formData.address && (
+                      <p className="text-red-500 text-sm mt-1">Address is required</p>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <input 
+                        type="text" 
+                        name="city" 
+                        value={formData.city} 
+                        onChange={handleChange} 
+                        placeholder="City *" 
+                        className={getInputClass('city')}
+                        required 
+                      />
+                      {touched.city && !formData.city && (
+                        <p className="text-red-500 text-sm mt-1">City is required</p>
+                      )}
+                    </div>
+                    <div>
+                      <input 
+                        type="text" 
+                        name="postalCode" 
+                        value={formData.postalCode} 
+                        onChange={handleChange} 
+                        placeholder="Postal Code *" 
+                        className={getInputClass('postalCode')}
+                        required 
+                      />
+                      {touched.postalCode && !formData.postalCode && (
+                        <p className="text-red-500 text-sm mt-1">Postal code is required</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Payment */}
               <div className="p-6 bg-gray-50 rounded-2xl">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><CreditCard className="w-5 h-5" /> Payment Method</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-navy-600" /> 
+                  Payment Method
+                </h2>
+                
+                {/* Cozzy Cash Balance Display */}
+                {currentUser && (
+                  <div className="mb-4 p-3 bg-navy-50 rounded-xl border border-navy-100">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-navy-600" />
+                      <span className="text-sm text-navy-700">Your Cozzy Cash Balance: <strong>{formatPrice(cozzyCashBalance)}</strong></span>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="space-y-3">
-                  {['transfer', 'cod'].map((method) => (
-                    <button key={method} type="button" onClick={() => setPaymentMethod(method)} className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 active:scale-[0.98] ${paymentMethod === method ? 'border-navy-600 bg-navy-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === method ? 'border-navy-600' : 'border-gray-300'}`}>{paymentMethod === method && <div className="w-2.5 h-2.5 rounded-full bg-navy-600" />}</div>
-                      <span className="font-medium capitalize">{method === 'transfer' ? 'Bank Transfer' : 'Cash on Delivery'}</span>
-                    </button>
-                  ))}
+                  {PAYMENT_METHODS.map((method) => {
+                    const Icon = method.icon;
+                    const isSelected = paymentMethod === method.id;
+                    const isDisabled = method.id === 'cozzy_cash' && !isCozzyCashSufficient;
+                    
+                    return (
+                      <button 
+                        key={method.id} 
+                        type="button" 
+                        onClick={() => !isDisabled && setPaymentMethod(method.id)}
+                        disabled={isDisabled}
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 
+                          ${isSelected 
+                            ? 'border-navy-600 bg-navy-50' 
+                            : 'border-gray-200 hover:border-gray-300'
+                          }
+                          ${isDisabled 
+                            ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                            : 'active:scale-[0.98]'
+                          }`
+                        }
+                      >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center 
+                          ${isSelected ? 'border-navy-600' : 'border-gray-300'}`
+                        }>
+                          {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-navy-600" />}
+                        </div>
+                        <Icon className={`w-5 h-5 ${isDisabled ? 'text-gray-400' : 'text-navy-600'}`} />
+                        <span className={`font-medium flex-1 text-left ${isDisabled ? 'text-gray-400' : 'text-gray-900'}`}>
+                          {method.name}
+                        </span>
+                        {method.id === 'cozzy_cash' && (
+                          <span className="text-xs text-navy-600 bg-navy-100 px-2 py-1 rounded-full">
+                            Balance: {formatPrice(cozzyCashBalance)}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+                
+                {/* Insufficient Balance Warning */}
+                {isCozzyCashSelected && !isCozzyCashSufficient && (
+                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <p className="text-red-600 text-sm font-medium">
+                      Insufficient Cozzy Cash balance.
+                    </p>
+                    <p className="text-red-500 text-xs mt-1">
+                      Required: {formatPrice(total)} | Available: {formatPrice(cozzyCashBalance)}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <button type="submit" disabled={isProcessing} className="w-full py-4 bg-navy-600 text-white rounded-xl font-medium hover:bg-navy-700 active:scale-[0.98] disabled:opacity-50">{isProcessing ? 'Processing...' : `Pay ${formatPrice(total)}`}</button>
+              {/* Submit Button */}
+              <button 
+                type="submit" 
+                disabled={!canCheckout || isProcessing}
+                className="w-full py-4 bg-navy-600 text-white rounded-xl font-medium 
+                  hover:bg-navy-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+                  transition-all duration-200"
+              >
+                {isProcessing 
+                  ? 'Processing...' 
+                  : isCozzyCashSelected 
+                    ? 'Pay with Cozzy Cash' 
+                    : `Pay ${formatPrice(total)}`
+                }
+              </button>
+              
+              {!isFormValid && (
+                <p className="text-red-500 text-sm text-center">
+                  Please fill in all shipping information to proceed.
+                </p>
+              )}
             </form>
           </div>
 
@@ -114,26 +319,34 @@ const Checkout = () => {
                 ))}
               </div>
 
-              {/* Cozzy Cash */}
-              {currentUser && (
-                <div className="mb-4 p-4 bg-white rounded-xl">
-                  <div className="flex items-center gap-2 mb-3"><Sparkles className="w-5 h-5 text-navy-600" /><span className="font-medium text-gray-900">Cozzy Cash</span></div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-500">Available</p>
-                      <p className="font-bold text-navy-600">{formatPrice(currentUser.cozzyCash)}</p>
-                    </div>
-                    <button type="button" onClick={() => setUseCozzyCash(!useCozzyCash)} className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 active:scale-95 ${useCozzyCash ? 'bg-navy-600 text-white' : 'bg-gray-200 text-gray-600'}`}>{useCozzyCash ? 'Applied' : 'Apply'}</button>
-                  </div>
-                </div>
-              )}
+              {/* Payment Method Info */}
+              <div className="mb-4 p-3 bg-white rounded-xl border border-gray-200">
+                <p className="text-xs text-gray-500 mb-1">Payment Method</p>
+                <p className="font-medium text-gray-900">
+                  {PAYMENT_METHODS.find(m => m.id === paymentMethod)?.name}
+                </p>
+              </div>
 
               {/* Totals */}
               <div className="space-y-2 pt-4 border-t border-gray-200">
-                <div className="flex justify-between text-gray-600"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-                <div className="flex justify-between text-gray-600"><span>Shipping</span><span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span></div>
-                {discount > 0 && <div className="flex justify-between text-navy-600"><span>Cozzy Cash</span><span>-{formatPrice(discount)}</span></div>}
-                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2"><span>Total</span><span>{formatPrice(total)}</span></div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                </div>
+                {isCozzyCashSelected && (
+                  <div className="flex justify-between text-navy-600">
+                    <span>Cozzy Cash Used</span>
+                    <span>-{formatPrice(total)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2">
+                  <span>Total</span>
+                  <span>{isCozzyCashSelected ? 'Rp 0' : formatPrice(total)}</span>
+                </div>
               </div>
             </div>
           </div>

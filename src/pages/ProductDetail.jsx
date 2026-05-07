@@ -199,7 +199,7 @@ const ProductDetail = () => {
                 Add to Cart
               </button>
               <button
-                onClick={() => toggleWishlist(product)}
+                onClick={() => { if (isLoggedIn) toggleWishlist(product); }}
                 className="p-4 rounded-xl border-2 border-gray-200 transition-all duration-200 hover:border-red-300 hover:bg-red-50 active:scale-95"
               >
                 <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />

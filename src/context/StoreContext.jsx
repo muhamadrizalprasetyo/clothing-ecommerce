@@ -265,6 +265,16 @@ export const StoreProvider = ({ children }) => {
     return orders.find(order => order.id === orderId);
   }, [orders]);
 
+  const updateOrderStatus = useCallback((orderId, newStatus) => {
+    setOrders(prev => {
+      const updated = prev.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      );
+      return updated;
+    });
+    toastSystem.notify(`Order status updated to ${newStatus}`, 'success');
+  }, []);
+
   // Cozzy Cash actions
   const addCozzyCash = useCallback((amount) => {
     setCurrentUser(prev => {
@@ -320,6 +330,7 @@ export const StoreProvider = ({ children }) => {
     // Order actions
     createOrder,
     getOrderById,
+    updateOrderStatus,
     
     // Cozzy Cash
     addCozzyCash,

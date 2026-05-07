@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { StoreProvider, useStore } from './context/StoreContext';
+import { StoreProvider } from './context/StoreContext';
+import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Toast from './components/Toast';
 import Footer from './components/Footer';
@@ -19,27 +20,9 @@ import Receipt from './pages/Receipt';
 import EditAccount from './pages/EditAccount';
 import Orders from './pages/Orders';
 
-// Protected Route wrapper
-const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useStore();
-  
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return children;
-};
-
-// Public Route wrapper (redirects logged-in users)
-const PublicRoute = ({ children }) => {
-  const { isLoggedIn } = useStore();
-  
-  if (isLoggedIn) {
-    return <Navigate to="/" replace />;
-  }
-  
-  return children;
-};
+// Routes configuration:
+// - Public: /, /catalog (browse only), /login, /register
+// - Protected: /product/:id, /cart, /checkout, /wishlist, /orders, /account, /receipt/:orderId, /about, /contact
 
 function App() {
   return (
@@ -73,9 +56,32 @@ function App() {
               />
               
               <Route path="/catalog" element={<Catalog />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
+              
+              {/* Protected Routes - Authentication Required */}
+              <Route 
+                path="/product/:id" 
+                element={
+                  <ProtectedRoute>
+                    <ProductDetail />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/about" 
+                element={
+                  <ProtectedRoute>
+                    <About />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/contact" 
+                element={
+                  <ProtectedRoute>
+                    <Contact />
+                  </ProtectedRoute>
+                } 
+              />
               
               {/* Protected Routes */}
               <Route 
