@@ -19,7 +19,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       await login(formData.email, formData.password);
       navigate('/');
@@ -36,7 +36,7 @@ const Login = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <img src="/logo1.jpg" alt="cozzy.co" className="h-16 w-auto mx-auto mb-4" />
+            <img src="/logo1.png" alt="Cozzy Store" className="h-16 w-auto mx-auto mb-4" />
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
           <p className="text-gray-500 mt-1">wanna style cozzy with me?</p>

@@ -61,26 +61,15 @@ const Navbar = () => {
       >
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           <div className="flex items-center justify-between h-20 lg:h-24">
-            {/* Logo - Minimal & Bold in Navy/White */}
             <Link
               to="/"
-              className="flex items-center gap-4 group active:scale-95 transition-all duration-300"
+              className="flex items-center group active:scale-95 transition-all duration-300"
             >
-              <div className="relative overflow-hidden rounded-full border-2 border-white/20 p-0.5 group-hover:border-white/40 transition-colors">
-                <img
-                  src="/logo1.png"
-                  alt="CZZY"
-                  className="h-10 w-10 object-cover rounded-full transition-transform duration-700 group-hover:scale-110"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold tracking-[0.2em] text-white transition-colors duration-300">
-                  COZZY
-                </span>
-                <span className="text-[10px] font-light tracking-[0.4em] text-white/50 -mt-1 uppercase">
-                  Est. 2024
-                </span>
-              </div>
+              <img
+                src="/logo1.png"
+                alt="COZZY"
+                className="h-8 lg:h-9 w-auto object-contain opacity-90 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100 drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+              />
             </Link>
 
             {/* Desktop Navigation - Elite Minimalist */}
@@ -328,7 +317,7 @@ const Navbar = () => {
             </div>
           </div>
         )}
-      </nav>
+      </nav >
 
       <div className="h-20 lg:h-24" />
 

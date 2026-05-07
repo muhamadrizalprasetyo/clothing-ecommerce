@@ -145,16 +145,16 @@ const Receipt = () => {
     }
 
     setIsSubmitting(true);
-    
+
     // Simulate upload delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     // Update order status
     updateOrderStatus(order.id, 'paid / waiting for confirmation');
-    
+
     // Refresh order
     setOrder({ ...order, status: 'paid / waiting for confirmation' });
-    
+
     setIsSubmitting(false);
     setSelectedFile(null);
     showToast('Payment proof submitted! Waiting for confirmation.', 'success', 5000);
@@ -188,8 +188,8 @@ const Receipt = () => {
               {isCozzyCash ? 'Order Confirmed!' : 'Order Placed Successfully!'}
             </h1>
             <p className="text-gray-500">
-              {isCozzyCash 
-                ? 'Thank you for shopping with cozzy.co' 
+              {isCozzyCash
+                ? 'Thank you for shopping with Cozzy Store'
                 : 'Please complete your payment to confirm the order'
               }
             </p>
@@ -200,9 +200,9 @@ const Receipt = () => {
             {/* Header */}
             <div className="receipt-header p-6 border-b border-gray-100 flex items-center justify-between print:p-3">
               <div className="flex items-center gap-3">
-                <img src="/logo1.jpg" alt="cozzy.co" className="h-10 w-auto" />
+                <img src="/logo1.png" alt="Cozzy Store" className="h-10 w-auto" />
                 <div>
-                  <p className="font-bold text-gray-900">cozzy.co</p>
+                  <p className="font-bold text-gray-900">COZZY</p>
                   <p className="text-xs text-gray-500">wanna style cozzy with me?</p>
                 </div>
               </div>
@@ -281,7 +281,7 @@ const Receipt = () => {
                     </p>
                     <div className="flex flex-col items-center gap-4">
                       <div className="bg-white p-4 rounded-xl border-2 border-navy-200">
-                        <img 
+                        <img
                           src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=CozzyOrder-${order.id}-${order.total}`}
                           alt="QRIS Payment"
                           className="w-48 h-48"
@@ -346,7 +346,7 @@ const Receipt = () => {
                 <FileCheck className="w-5 h-5 text-navy-600" />
                 Upload Payment Proof
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-navy-400 transition-colors">
                   <label className="flex flex-col items-center gap-2 cursor-pointer">
@@ -362,14 +362,14 @@ const Receipt = () => {
                     />
                   </label>
                 </div>
-                
+
                 {selectedFile && (
                   <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
                     <Check className="w-4 h-4 text-green-600" />
                     <span className="text-sm text-green-700">File selected: {selectedFile.name}</span>
                   </div>
                 )}
-                
+
                 <button
                   onClick={handleSubmitProof}
                   disabled={!selectedFile || isSubmitting}
