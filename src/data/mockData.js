@@ -141,3 +141,57 @@ export const calculateTotal = (cartItems, useCozzyCash = false, cozzyCashBalance
     total: subtotal + shipping - discount
   };
 };
+
+// Indonesian payment methods
+export const paymentMethods = [
+  { 
+    id: 'bca', 
+    name: 'BCA Virtual Account', 
+    type: 'va', 
+    bank: 'BCA',
+    description: 'Transfer ke nomor Virtual Account BCA',
+    icon: 'Building'
+  },
+  { 
+    id: 'mandiri', 
+    name: 'Mandiri Virtual Account', 
+    type: 'va', 
+    bank: 'Mandiri',
+    description: 'Transfer ke nomor Virtual Account Mandiri',
+    icon: 'Building'
+  },
+  { 
+    id: 'bri', 
+    name: 'BRI Virtual Account', 
+    type: 'va', 
+    bank: 'BRI',
+    description: 'Transfer ke nomor Virtual Account BRI',
+    icon: 'Building'
+  },
+  { 
+    id: 'qris', 
+    name: 'QRIS', 
+    type: 'qris',
+    description: 'Scan QR code untuk pembayaran',
+    icon: 'QrCode'
+  },
+  { 
+    id: 'cozzy_cash', 
+    name: 'Cozzy Cash', 
+    type: 'wallet',
+    description: 'Gunakan saldo Cozzy Cash kamu',
+    icon: 'Wallet'
+  }
+];
+
+// Generate Virtual Account number
+export const generateVANumber = (bank, orderId) => {
+  const bankCodes = {
+    'BCA': '880',
+    'Mandiri': '890',
+    'BRI': '870'
+  };
+  
+  const code = bankCodes[bank] || '880';
+  return `${code}${orderId.toString().padStart(10, '0')}`;
+};

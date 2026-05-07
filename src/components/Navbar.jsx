@@ -1,63 +1,36 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
-import { 
-  ShoppingBag, 
-  Heart, 
-  User, 
-  Menu, 
-  X, 
-  Search,
-  LogOut,
-  Receipt,
-  ChevronDown,
-  Sparkles
-} from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Sparkles, LogOut, Receipt } from 'lucide-react';
 
 const Navbar = () => {
-  const { 
-    currentUser, 
-    isLoggedIn, 
-    cartCount, 
-    wishlistCount, 
-    logout,
-    showToast
-  } = useStore();
-  
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // Handle scroll for backdrop blur effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setIsProfileOpen(false);
-  }, [location.pathname]);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const {
+    currentUser,
+    logout,
+    cartCount,
+    wishlistCount,
+    isLoggedIn
+  } = useStore();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/catalog?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/catalog?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
+      setIsMobileMenuOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -84,90 +57,92 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 bg-navy-700 shadow-lg"
+        className="fixed top-0 left-0 right-0 z-50 bg-navy-900/95 backdrop-blur-xl border-b border-white/5 transition-all duration-500"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
-            {/* Logo */}
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 group active:scale-95 transition-transform duration-150"
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          <div className="flex items-center justify-between h-20 lg:h-24">
+            {/* Logo - Minimal & Bold in Navy/White */}
+            <Link
+              to="/"
+              className="flex items-center gap-4 group active:scale-95 transition-all duration-300"
             >
-              <img 
-                src="/logo1.jpg" 
-                alt="cozzy.co" 
-                className="h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-              />
-              <span className="text-lg font-bold tracking-tight text-white hidden sm-block">
-                cozzy.co
-              </span>
+              <div className="relative overflow-hidden rounded-full border-2 border-white/20 p-0.5 group-hover:border-white/40 transition-colors">
+                <img
+                  src="/logo1.png"
+                  alt="CZZY"
+                  className="h-10 w-10 object-cover rounded-full transition-transform duration-700 group-hover:scale-110"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-[0.2em] text-white transition-colors duration-300">
+                  COZZY
+                </span>
+                <span className="text-[10px] font-light tracking-[0.4em] text-white/50 -mt-1 uppercase">
+                  Est. 2024
+                </span>
+              </div>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-8">
+            {/* Desktop Navigation - Elite Minimalist */}
+            <div className="hidden lg:flex items-center gap-12">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className={`
-                    relative text-sm font-medium
-                    transition-all duration-200
-                    active:scale-95
-                    hover:-translate-y-0.5
-                    ${isActive(link.path) 
-                      ? 'text-white font-semibold' 
-                      : 'text-navy-200 hover:text-white'
+                    relative text-xs font-medium tracking-[0.15em] uppercase
+                    transition-all duration-500 ease-out
+                    hover:text-white/100
+                    ${isActive(link.path)
+                      ? 'text-white'
+                      : 'text-white/50'
                     }
                   `}
                 >
                   {link.label}
-                  {isActive(link.path) && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-navy-600 rounded-full" />
-                  )}
+                  <span className={`absolute -bottom-1.5 left-0 h-[1.5px] bg-white transition-all duration-500 ease-expo ${isActive(link.path) ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                 </Link>
               ))}
             </div>
 
-            {/* Search Bar - Desktop */}
-            <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-xs mx-8">
+            {/* Search Bar - Modern Contrast */}
+            <form onSubmit={handleSearch} className="hidden xl:flex items-center flex-1 max-w-sm mx-16">
               <div className="relative w-full group">
                 <input
                   type="text"
-                  placeholder="Search cozzy..."
+                  placeholder="SEARCH COLLECTION..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="
-                    w-full pl-10 pr-4 py-2 rounded-full
-                    bg-navy-600/50 border border-navy-500
-                    text-sm text-white placeholder-navy-300
-                    transition-all duration-200
-                    focus:bg-navy-600 focus:border-navy-400 focus:ring-2 focus:ring-navy-400
-                    focus:outline-none
-                    active:scale-[0.98]
+                    w-full pl-12 pr-6 py-3 rounded-full
+                    bg-white/5 border border-white/10
+                    text-[11px] tracking-widest text-white placeholder-white/30
+                    transition-all duration-500 ease-out
+                    focus:bg-white/10 focus:border-white/30 focus:outline-none
+                    focus:shadow-[0_0_40px_-15px_rgba(255,255,255,0.2)]
                   "
                 />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-300 group-focus-within:text-white transition-colors duration-200" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-white transition-all duration-500" />
               </div>
             </form>
 
-            {/* Actions */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            {/* Elite Actions */}
+            <div className="flex items-center gap-2 lg:gap-6">
               {/* Wishlist */}
               <Link
                 to="/wishlist"
                 className={`
-                  relative p-2 rounded-full
-                  transition-all duration-200
-                  hover:bg-navy-600
-                  active:scale-90
-                  ${isActive('/wishlist') ? 'bg-navy-600 text-red-400' : 'text-navy-200 hover:text-white'}
+                  relative p-3 rounded-full border border-white/5
+                  transition-all duration-500 ease-out
+                  hover:bg-white/10 hover:-translate-y-1
+                  ${isActive('/wishlist') ? 'text-white bg-white/10 border-white/20' : 'text-white/50 hover:text-white'}
                 `}
                 aria-label="Wishlist"
               >
-                <Heart className={`w-5 h-5 ${isActive('/wishlist') && 'fill-current'}`} />
+                <Heart className={`w-4 h-4 transition-all duration-500 ${isActive('/wishlist') && 'fill-white'}`} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
-                    {wishlistCount > 9 ? '9+' : wishlistCount}
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-navy-900 text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {wishlistCount}
                   </span>
                 )}
               </Link>
@@ -176,206 +151,177 @@ const Navbar = () => {
               <Link
                 to="/cart"
                 className={`
-                  relative p-2 rounded-full
-                  transition-all duration-200
-                  hover:bg-navy-600
-                  active:scale-90
-                  ${isActive('/cart') ? 'bg-navy-600 text-white' : 'text-navy-200 hover:text-white'}
+                  relative p-3 rounded-full border border-white/5
+                  transition-all duration-500 ease-out
+                  hover:bg-white/10 hover:-translate-y-1
+                  ${isActive('/cart') ? 'text-white bg-white/10 border-white/20' : 'text-white/50 hover:text-white'}
                 `}
                 aria-label="Cart"
               >
-                <ShoppingBag className="w-5 h-5" />
+                <ShoppingBag className="w-4 h-4" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-navy-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                    {cartCount > 9 ? '9+' : cartCount}
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-navy-900 text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {cartCount}
                   </span>
                 )}
               </Link>
 
-              {/* Profile / Auth */}
+              {/* Profile / Auth - Signature Style */}
               {isLoggedIn ? (
                 <div className="relative">
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className={`
-                      flex items-center gap-2 p-2 rounded-full
-                      transition-all duration-200
-                      hover:bg-navy-600
-                      active:scale-95
-                      ${isProfileOpen ? 'bg-navy-600' : ''}
+                      flex items-center gap-3 p-1.5 pr-4 rounded-full
+                      bg-white/5 border border-white/10
+                      transition-all duration-500 ease-out
+                      hover:bg-white/10 active:scale-95
+                      ${isProfileOpen ? 'bg-white/10 border-white/20' : ''}
                     `}
-                    aria-label="Profile menu"
-                    aria-expanded={isProfileOpen}
                   >
-                    <div className="w-8 h-8 rounded-full bg-navy-600 text-white flex items-center justify-center text-sm font-medium">
+                    <div className="w-8 h-8 rounded-full bg-white text-navy-900 flex items-center justify-center text-[10px] font-bold tracking-tighter">
                       {currentUser?.name?.[0]?.toUpperCase() || 'U'}
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-navy-200 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                    <span className="hidden lg:block text-[10px] font-medium tracking-[0.2em] text-white/70 uppercase">
+                      Account
+                    </span>
+                    <ChevronDown className={`w-3 h-3 text-white/30 transition-transform duration-500 ${isProfileOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {/* Dropdown */}
+                  {/* Signature Dropdown */}
                   {isProfileOpen && (
-                    <div 
+                    <div
                       className="
-                        absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100
-                        transform transition-all duration-200 origin-top-right
-                        animate-dropdown
+                        absolute right-0 mt-6 w-72 bg-navy-800/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/10
+                        transform transition-all duration-500 origin-top-right overflow-hidden
                       "
-                      style={{ animation: 'dropdownIn 0.2s ease-out' }}
                     >
-                      {/* User Info */}
-                      <div className="p-4 border-b border-gray-100">
-                        <p className="font-medium text-gray-900 truncate">{currentUser?.name}</p>
-                        <p className="text-sm text-gray-500 truncate">{currentUser?.email}</p>
-                        
-                        {/* Cozzy Cash Display */}
-                        <div className="mt-3 p-2 bg-navy-50 rounded-lg flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-navy-600" />
+                      <div className="p-8 border-b border-white/5">
+                        <p className="text-[10px] font-light tracking-[0.3em] text-white/50 uppercase mb-2">Member Profile</p>
+                        <p className="font-medium text-white tracking-widest truncate">{currentUser?.name}</p>
+                        <p className="text-[10px] text-white/30 truncate mt-1">{currentUser?.email}</p>
+
+                        <div className="mt-8 p-4 bg-white/5 rounded-2xl border border-white/5 flex items-center gap-4">
+                          <div className="p-2 bg-white/10 rounded-xl">
+                            <Sparkles className="w-4 h-4 text-white" />
+                          </div>
                           <div>
-                            <p className="text-xs text-navy-600 font-medium">Cozzy Cash</p>
-                            <p className="text-sm font-bold text-navy-700">
+                            <p className="text-[9px] font-bold tracking-[0.2em] text-white/40 uppercase">Cozzy Balance</p>
+                            <p className="text-sm font-medium text-white tracking-wider">
                               {formatCash(currentUser?.cozzyCash || 0)}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Menu Items */}
-                      <div className="p-2">
+                      <div className="p-3">
                         <Link
                           to="/account"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 active:scale-[0.98]"
+                          className="flex items-center gap-4 px-5 py-4 rounded-xl text-[11px] font-light tracking-widest text-white/70 hover:text-white hover:bg-white/5 transition-all duration-500"
+                          onClick={() => setIsProfileOpen(false)}
                         >
                           <User className="w-4 h-4" />
-                          Edit Account
+                          EDIT ACCOUNT
                         </Link>
                         <Link
                           to="/orders"
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 active:scale-[0.98]"
+                          className="flex items-center gap-4 px-5 py-4 rounded-xl text-[11px] font-light tracking-widest text-white/70 hover:text-white hover:bg-white/5 transition-all duration-500"
+                          onClick={() => setIsProfileOpen(false)}
                         >
                           <Receipt className="w-4 h-4" />
-                          My Orders
+                          MY ORDERS
                         </Link>
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors duration-150 active:scale-[0.98] text-left"
+                          className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-[11px] font-bold tracking-widest text-red-400 hover:bg-red-400/10 transition-all duration-500 text-left"
                         >
                           <LogOut className="w-4 h-4" />
-                          Logout
+                          LOGOUT
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-4">
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200 active:scale-95"
+                    className="px-6 py-3 text-[10px] font-bold tracking-[0.2em] text-white/50 hover:text-white transition-all duration-500 uppercase"
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="px-4 py-2 text-sm font-medium text-white bg-navy-600 rounded-full hover:bg-navy-700 transition-all duration-200 active:scale-95 hover:shadow-md"
+                    className="px-8 py-3 text-[10px] font-bold tracking-[0.2em] text-navy-900 bg-white rounded-full hover:bg-white/90 hover:scale-105 transition-all duration-500 uppercase shadow-lg shadow-white/10"
                   >
                     Join
                   </Link>
                 </div>
               )}
 
-              {/* Mobile Menu Toggle */}
+              {/* Mobile Trigger */}
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 rounded-full hover:bg-navy-600 transition-all duration-200 active:scale-90"
+                className="lg:hidden p-3 text-white transition-all duration-500"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6 text-white" />
+                  <X className="w-6 h-6" />
                 ) : (
-                  <Menu className="w-6 h-6 text-navy-200" />
+                  <Menu className="w-6 h-6" />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Elite Menu */}
         {isMobileMenuOpen && (
-          <div 
-            className="lg:hidden bg-navy-700 border-t border-navy-500"
-            style={{ animation: 'slideDown 0.3s ease-out' }}
-          >
-            <div className="px-4 py-4 space-y-3">
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="mb-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-navy-600/50 border-transparent focus:bg-navy-600 focus:border-navy-400 focus:ring-2 focus:ring-navy-400 transition-all duration-200"
-                  />
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-300" />
-                </div>
-              </form>
+          <div className="lg:hidden bg-navy-900 fixed inset-0 z-40 pt-24 overflow-y-auto">
+            <div className="px-8 py-12 space-y-12">
+              <div className="space-y-6">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`
+                      block text-5xl font-bold tracking-tighter transition-all duration-500
+                      ${isActive(link.path) ? 'text-white' : 'text-white/20 hover:text-white/40'}
+                    `}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
 
-              {/* Mobile Nav Links */}
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`
-                    block py-3 px-4 rounded-xl text-base font-medium
-                    transition-all duration-200
-                    active:scale-[0.98]
-                    ${isActive(link.path)
-                      ? 'bg-navy-600 text-white'
-                      : 'text-navy-200 hover:bg-navy-600 hover:text-white'
-                    }
-                  `}
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              {/* Mobile Auth Links */}
-              {!isLoggedIn && (
-                <div className="pt-4 border-t border-navy-600 space-y-2">
+              {!isLoggedIn ? (
+                <div className="pt-12 border-t border-white/5 space-y-6">
                   <Link
                     to="/login"
-                    className="block w-full py-3 px-4 text-center rounded-lg font-medium text-white border border-navy-500 hover:bg-navy-600 transition-all duration-200 active:scale-[0.98]"
+                    className="block text-2xl font-light text-white/50"
                   >
-                    Login
+                    SIGN IN
                   </Link>
                   <Link
                     to="/register"
-                    className="block w-full py-3 px-4 text-center rounded-lg font-medium text-navy-700 bg-white hover:bg-navy-100 transition-all duration-200 active:scale-[0.98]"
+                    className="block text-2xl font-bold text-white"
                   >
-                    Create Account
+                    CREATE ACCOUNT
                   </Link>
                 </div>
-              )}
-
-              {/* Mobile Cozzy Cash for logged in users */}
-              {isLoggedIn && (
-                <div className="pt-4 border-t border-navy-600">
-                  <div className="p-3 bg-navy-50 rounded-xl flex items-center gap-3">
-                    <Sparkles className="w-5 h-5 text-navy-600" />
-                    <div>
-                      <p className="text-sm text-navy-600 font-medium">Your Cozzy Cash</p>
-                      <p className="text-lg font-bold text-navy-700">
-                        {formatCash(currentUser?.cozzyCash || 0)}
-                      </p>
-                    </div>
+              ) : (
+                <div className="pt-12 border-t border-white/5 space-y-8">
+                  <div className="p-6 bg-white/5 rounded-3xl">
+                    <p className="text-white/50 text-[10px] tracking-widest uppercase mb-2">Member</p>
+                    <p className="text-white text-2xl font-bold">{currentUser?.name}</p>
+                    <p className="text-white/70 text-lg font-light mt-4">Balance: {formatCash(currentUser?.cozzyCash || 0)}</p>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="mt-2 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-red-400 font-medium hover:bg-navy-600 transition-all duration-200 active:scale-[0.98]"
+                    className="text-red-400 text-xl font-bold tracking-widest"
                   >
-                    <LogOut className="w-5 h-5" />
-                    Logout
+                    DISCONNECT
                   </button>
                 </div>
               )}
@@ -384,32 +330,10 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Spacer for fixed navbar */}
-      <div className="h-16 lg:h-20 bg-navy-700" />
+      <div className="h-20 lg:h-24" />
 
-      {/* CSS Animations */}
       <style>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes dropdownIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95) translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
+        .ease-expo { transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
       `}</style>
     </>
   );

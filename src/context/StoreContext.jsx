@@ -28,7 +28,7 @@ const createToastSystem = () => {
     const toast = { id, message, type, duration };
     toasts = [...toasts, toast];
     listeners.forEach(callback => callback(toasts));
-    
+
     setTimeout(() => {
       toasts = toasts.filter(t => t.id !== id);
       listeners.forEach(callback => callback(toasts));
@@ -45,7 +45,20 @@ export const StoreProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cozzy_user');
-      return saved ? JSON.parse(saved) : null;
+      if (saved && saved !== 'undefined') {
+        try {
+          const user = JSON.parse(saved);
+          // Add Cozzy Cash for existing users if they don't have it
+          if (user && !user.cozzyCash) {
+            user.cozzyCash = 500000;
+            localStorage.setItem('cozzy_user', JSON.stringify(user));
+          }
+          return user;
+        } catch (e) {
+          console.error("Failed to parse cozzy_user", e);
+          localStorage.removeItem('cozzy_user');
+        }
+      }
     }
     return null;
   });
@@ -54,7 +67,14 @@ export const StoreProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cozzy_cart');
-      return saved ? JSON.parse(saved) : [];
+      if (saved && saved !== 'undefined') {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse cozzy_cart", e);
+          localStorage.removeItem('cozzy_cart');
+        }
+      }
     }
     return [];
   });
@@ -63,7 +83,14 @@ export const StoreProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cozzy_wishlist');
-      return saved ? JSON.parse(saved) : [];
+      if (saved && saved !== 'undefined') {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse cozzy_wishlist", e);
+          localStorage.removeItem('cozzy_wishlist');
+        }
+      }
     }
     return [];
   });
@@ -72,7 +99,14 @@ export const StoreProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cozzy_orders');
-      return saved ? JSON.parse(saved) : [];
+      if (saved && saved !== 'undefined') {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse cozzy_orders", e);
+          localStorage.removeItem('cozzy_orders');
+        }
+      }
     }
     return [];
   });
@@ -109,22 +143,28 @@ export const StoreProvider = ({ children }) => {
   // Auth actions
   const login = useCallback((email, password) => {
     // Mock login - in real app, verify with backend
-    const user = { ...initialUser, email, id: `user_${Date.now()}` };
+    const user = {
+      ...initialUser,
+      email,
+      id: `user_${Date.now()}`,
+      cozzyCash: 500000 // Give new users 500k Cozzy Cash
+    };
     setCurrentUser(user);
-    toastSystem.notify('Welcome back! wanna style cozzy with me?', 'success');
+    toastSystem.notify('Welcome! You got Rp 500,000 Cozzy Cash!', 'success');
     return user;
   }, []);
 
   const register = useCallback((name, email, password) => {
     // Mock register - in real app, create in backend
-    const user = { 
-      ...initialUser, 
-      name, 
-      email, 
-      id: `user_${Date.now()}` 
+    const user = {
+      ...initialUser,
+      name,
+      email,
+      id: `user_${Date.now()}`,
+      cozzyCash: 500000 // Give new users 500k Cozzy Cash
     };
     setCurrentUser(user);
-    toastSystem.notify('Account created! Let\'s get cozzy!', 'success');
+    toastSystem.notify('Account created! You got Rp 500,000 Cozzy Cash!', 'success');
     return user;
   }, []);
 
@@ -185,7 +225,7 @@ export const StoreProvider = ({ children }) => {
       removeFromCart(cartId);
       return;
     }
-    setCart(prev => prev.map(item => 
+    setCart(prev => prev.map(item =>
       item.cartId === cartId ? { ...item, quantity } : item
     ));
   }, [removeFromCart]);
@@ -237,17 +277,73 @@ export const StoreProvider = ({ children }) => {
     }
   }, [isInWishlist, addToWishlist, removeFromWishlist]);
 
+  // Indonesian payment methods
+  const generateVA = (bank, orderId) => {
+    const bankCodes = {
+      BCA: '014',
+      Mandiri: '008',
+      BRI: '002'
+    };
+    return `${bankCodes[bank]}${orderId.slice(-10)}`;
+  };
+
+  const generateQRIS = (orderId) => {
+    return `QRIS_${orderId.slice(-12)}`;
+  };
+
   // Order actions
   const createOrder = useCallback((orderData) => {
+    let paymentDetails = {};
+
+    // Generate payment details based on method
+    switch (orderData.paymentMethod) {
+      case 'BCA VA':
+        paymentDetails = {
+          vaNumber: generateVA('BCA', orderData.id || `ORD_${Date.now()}`),
+          bankName: 'BCA',
+          paymentType: 'Virtual Account'
+        };
+        break;
+      case 'Mandiri VA':
+        paymentDetails = {
+          vaNumber: generateVA('Mandiri', orderData.id || `ORD_${Date.now()}`),
+          bankName: 'Mandiri',
+          paymentType: 'Virtual Account'
+        };
+        break;
+      case 'BRI VA':
+        paymentDetails = {
+          vaNumber: generateVA('BRI', orderData.id || `ORD_${Date.now()}`),
+          bankName: 'BRI',
+          paymentType: 'Virtual Account'
+        };
+        break;
+      case 'QRIS':
+        paymentDetails = {
+          qrisCode: generateQRIS(orderData.id || `ORD_${Date.now()}`),
+          paymentType: 'QRIS'
+        };
+        break;
+      case 'Cozzy Cash':
+        paymentDetails = {
+          paymentType: 'Cozzy Cash',
+          usedAmount: orderData.usedCozzyCash || 0
+        };
+        break;
+      default:
+        paymentDetails = { paymentType: 'Unknown' };
+    }
+
     const order = {
       id: `ORD_${Date.now()}`,
       ...orderData,
+      paymentDetails,
       createdAt: new Date().toISOString(),
       status: 'pending'
     };
-    
+
     setOrders(prev => [order, ...prev]);
-    
+
     // Deduct Cozzy Cash if used
     if (orderData.usedCozzyCash > 0 && currentUser) {
       setCurrentUser(prev => ({
@@ -255,9 +351,18 @@ export const StoreProvider = ({ children }) => {
         cozzyCash: prev.cozzyCash - orderData.usedCozzyCash
       }));
     }
-    
+
     clearCart();
-    toastSystem.notify('Order placed successfully! Stay cozzy!', 'success', 5000);
+
+    // Show appropriate success message
+    let successMessage = 'Order placed successfully! ';
+    if (orderData.paymentMethod === 'Cozzy Cash') {
+      successMessage += 'Payment completed with Cozzy Cash!';
+    } else {
+      successMessage += `Please complete payment via ${orderData.paymentMethod}.`;
+    }
+
+    toastSystem.notify(successMessage, 'success', 5000);
     return order;
   }, [currentUser, clearCart]);
 
@@ -289,52 +394,52 @@ export const StoreProvider = ({ children }) => {
   const value = {
     // Data
     products,
-    
+
     // User state
     currentUser,
     isLoggedIn: !!currentUser,
-    
+
     // Cart state
     cart,
     cartTotal: getCartTotal(),
     cartCount: getCartCount(),
-    
+
     // Wishlist state
     wishlist,
     wishlistCount: wishlist.length,
-    
+
     // Orders state
     orders,
-    
+
     // Toast state
     toasts,
-    
+
     // Auth actions
     login,
     register,
     logout,
     updateProfile,
-    
+
     // Cart actions
     addToCart,
     removeFromCart,
     updateCartQuantity,
     clearCart,
-    
+
     // Wishlist actions
     addToWishlist,
     removeFromWishlist,
     isInWishlist,
     toggleWishlist,
-    
+
     // Order actions
     createOrder,
     getOrderById,
     updateOrderStatus,
-    
+
     // Cozzy Cash
     addCozzyCash,
-    
+
     // Toast helper
     showToast: toastSystem.notify
   };

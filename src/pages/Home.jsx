@@ -1,275 +1,261 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
-import { ArrowRight, Sparkles, ShoppingBag, Heart, Shirt, Wind } from 'lucide-react';
 import { formatPrice } from '../data/mockData';
+import { ArrowUpRight, ShoppingBag, Heart, Plus, Sparkles, ChevronRight, Play } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
   const { products, addToCart, toggleWishlist, isInWishlist, isLoggedIn } = useStore();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const heroRef = useRef(null);
+
+  // Parallax Effect Logic
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (heroRef.current) {
+        const { left, top, width, height } = heroRef.current.getBoundingClientRect();
+        const x = (e.clientX - left) / width - 0.5;
+        const y = (e.clientY - top) / height - 0.5;
+        setMousePos({ x, y });
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const featuredProducts = products.slice(0, 4);
 
-  // Check auth before allowing cart actions - redirect to login if guest
-  const requireAuth = () => {
-    if (!isLoggedIn) {
-      navigate('/login');
-      return false;
-    }
-    return true;
-  };
-
-  const handleAddToCart = (product) => {
-    if (!requireAuth()) return;
-    addToCart(product, product.sizes[0], product.colors[0], 1);
-  };
-
-  const handleProductClick = (e, productId) => {
-    if (!isLoggedIn) {
-      e.preventDefault();
-      navigate('/login');
-    }
-  };
-
   const handleShopCollection = () => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    } else {
-      navigate('/catalog');
-    }
+    navigate(isLoggedIn ? '/catalog' : '/login');
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section - Mobile-First */}
-      <section className="w-full bg-white">
-        <div className="flex flex-col md:flex-row md:min-h-[85vh]">
-          {/* Text Content - Mobile: Top, Desktop: Left */}
-          <div className="flex-1 flex flex-col justify-center px-5 py-8 md:px-8 lg:px-12 md:py-12 lg:order-1">
-            <div className="max-w-lg mx-auto md:mx-0">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-navy-50 text-navy-600 text-xs font-medium mb-5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>New Collection Available</span>
-              </div>
-              
-              {/* Headline */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight leading-tight">
-                wanna style<br />
-                <span className="text-navy-600">cozzy</span> with me?
-              </h1>
-              
-              {/* Subheadline */}
-              <p className="text-base md:text-lg text-gray-500 mb-6 md:mb-8 leading-relaxed">
-                Minimalist streetwear for the Gen Z aesthetic. Clean lines, premium quality, effortless style.
-              </p>
-              
-              {/* CTA Button - Full width on mobile */}
+    <div className="min-h-screen bg-white selection:bg-navy-900 selection:text-white">
+      {/* 01. CINEMATIC HERO SECTION */}
+      <section
+        ref={heroRef}
+        className="relative h-[110vh] w-full overflow-hidden flex items-center justify-center bg-black"
+      >
+        {/* Background Image with Parallax */}
+        <div
+          className="absolute inset-0 z-0 transition-transform duration-700 ease-out scale-110"
+          style={{
+            transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px) scale(1.1)`,
+            backgroundImage: "url('/banner.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Creative Overlay Grid */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-white" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 w-full max-w-[1440px] px-6 lg:px-12 text-center mt-[-10vh]">
+          <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md mb-12 animate-fade-in-up">
+            <Sparkles className="w-4 h-4 text-white" />
+            <span className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">New Drop — Collection '24</span>
+          </div>
+
+          <h1 className="text-[12vw] lg:text-[10vw] font-black leading-[0.85] tracking-tighter text-white uppercase italic mix-blend-overlay opacity-50 absolute inset-0 flex items-center justify-center whitespace-nowrap select-none">
+            STYLE COZZY
+          </h1>
+
+          <div className="relative space-y-8 max-w-4xl mx-auto">
+            <h2 className="text-5xl lg:text-9xl font-black tracking-tighter text-white leading-none uppercase">
+              REDEFINE<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/50 to-white/10 italic">MINIMALISM.</span>
+            </h2>
+
+            <p className="text-lg lg:text-xl text-white/70 max-w-xl mx-auto font-light leading-relaxed tracking-wide">
+              Crafted for the modern aesthetic. Low-impact materials, high-impact style.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-12">
               <button
                 onClick={handleShopCollection}
-                className="w-full md:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-navy-600 text-white rounded-xl font-semibold transition-all duration-300 hover:bg-navy-700 hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-navy-600/20"
+                className="group relative px-12 py-5 bg-white text-navy-950 font-bold tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95"
               >
-                <ShoppingBag className="w-5 h-5" />
-                Shop the Collection
+                <span className="relative z-10 flex items-center gap-3">
+                  Shop Gallery <ArrowUpRight className="w-4 h-4" />
+                </span>
+                <div className="absolute inset-0 bg-navy-950/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+              </button>
+
+              <button className="flex items-center gap-4 text-white hover:text-white/70 transition-all font-bold tracking-[0.2em] uppercase text-xs">
+                <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center">
+                  <Play className="w-4 h-4 fill-white" />
+                </div>
+                View Film
               </button>
             </div>
           </div>
-          
-          {/* Hero Image - Mobile: Bottom, Desktop: Right */}
-          <div className="flex-1 relative md:min-h-[85vh] lg:order-2">
-            <img 
-              src="/IMG_1965.jpg" 
-              alt="cozzy streetwear collection" 
-              className="w-full h-[50vh] md:h-full object-cover object-center"
-            />
-          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-bounce">
+          <div className="w-[1px] h-24 bg-gradient-to-b from-white/50 to-transparent" />
+          <span className="text-[10px] font-bold tracking-[0.4em] text-white/50 uppercase vertical-lr">Scroll</span>
         </div>
       </section>
 
-      {/* Marquee - Infinite Text Scroll */}
-      <section className="w-full bg-navy-900 py-3 overflow-hidden">
-        <div className="marquee-container relative">
-          <div className="marquee-content flex whitespace-nowrap animate-marquee">
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="text-sm md:text-base text-white/90 font-medium tracking-wide mx-8 flex items-center gap-2">
-                Premium Quality <span className="text-navy-400">•</span>
-                Minimalist Streetwear <span className="text-navy-400">•</span>
-                Gen-Z Aesthetic <span className="text-navy-400">•</span>
-                Anti-gravity Comfort <span className="text-navy-400">•</span>
-              </span>
+      {/* 02. CURATED GALLERY SECTION */}
+      <section className="py-32 lg:py-56 bg-white overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+          {/* Section Header */}
+          <div className="flex flex-col lg:flex-row items-end justify-between gap-12 mb-24 lg:mb-32">
+            <div className="max-w-2xl space-y-6">
+              <span className="text-[11px] font-bold tracking-[.8em] text-navy-900/40 uppercase">Elite Curations</span>
+              <h3 className="text-6xl lg:text-8xl font-black tracking-tighter text-black uppercase leading-none">
+                LATEST<br />RELEASES.
+              </h3>
+            </div>
+            <Link
+              to="/catalog"
+              className="group flex items-center gap-4 text-[10px] font-bold tracking-[0.4em] text-black uppercase pb-4 border-b border-black/10 hover:border-black transition-all"
+            >
+              Examine All <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+            </Link>
+          </div>
+
+          {/* Staggered Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+            {featuredProducts.map((product, index) => (
+              <div
+                key={product.id}
+                className={`group relative ${index % 2 !== 0 ? 'lg:mt-32' : ''}`}
+              >
+                {/* Product Card */}
+                <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 border border-black/5 hover:border-black/10 transition-all duration-700">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                  />
+
+                  {/* Floating Rank Background */}
+                  <span className="absolute top-12 -left-4 text-[12vw] font-black text-black/5 select-none leading-none">
+                    0{index + 1}
+                  </span>
+
+                  {/* Actions Overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
+
+                  <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-expo">
+                    <button
+                      onClick={() => addToCart(product, product.sizes[0], product.colors[0], 1)}
+                      className="w-full py-5 bg-white text-navy-950 font-bold text-[10px] tracking-[0.4em] uppercase shadow-2xl hover:bg-navy-950 hover:text-white transition-all duration-300"
+                    >
+                      Instant Purchase
+                    </button>
+                  </div>
+
+                  {/* Favorite Button */}
+                  <button
+                    onClick={() => toggleWishlist(product)}
+                    className="absolute top-8 right-8 p-4 bg-white/90 backdrop-blur-md rounded-full shadow-xl transition-all duration-500 hover:scale-110 active:scale-90"
+                  >
+                    <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-navy-950'}`} />
+                  </button>
+                </div>
+
+                {/* Product Info */}
+                <div className="pt-10 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <h4 className="text-[10px] font-bold tracking-[.3em] text-black/30 uppercase">{product.category}</h4>
+                      <Link to={`/product/${product.id}`} className="block">
+                        <h3 className="text-xl font-bold tracking-tight text-black group-hover:text-black/60 transition-colors uppercase">
+                          {product.name}
+                        </h3>
+                      </Link>
+                    </div>
+                    <span className="text-lg font-bold tracking-tighter text-black">{formatPrice(product.price)}</span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-        <style>{`
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .animate-marquee {
-            animation: marquee 20s linear infinite;
-          }
-        `}</style>
       </section>
 
-      {/* Category Teaser */}
-      <section className="w-full py-10 md:py-16 px-4 md:px-5 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-          {/* Hoodie Collection Card */}
-          <Link 
-            to="/catalog?category=Hoodie"
-            onClick={(e) => handleProductClick(e, 'hoodie')}
-            className="group relative flex-1 min-h-[180px] md:min-h-[240px] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-navy-600 to-navy-800" />
-            <div className="relative z-10 h-full flex flex-col justify-between p-5 md:p-6">
-              <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                <Wind className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-1">Hoodie Collection</h3>
-                <p className="text-sm text-white/70 flex items-center gap-2">
-                  Explore Now <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          {/* T-Shirt Essentials Card */}
-          <Link 
-            to="/catalog?category=T-Shirt"
-            onClick={(e) => handleProductClick(e, 'tshirt')}
-            className="group relative flex-1 min-h-[180px] md:min-h-[240px] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black" />
-            <div className="relative z-10 h-full flex flex-col justify-between p-5 md:p-6">
-              <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                <Shirt className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-1">T-Shirt Essentials</h3>
-                <p className="text-sm text-white/70 flex items-center gap-2">
-                  Explore Now <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </p>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Featured Products - Best Sellers */}
-      <section className="w-full py-10 md:py-16 px-4 md:px-5 max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-6 md:mb-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Best Sellers</h2>
-            <p className="text-sm md:text-base text-gray-500">Handpicked cozzy essentials</p>
-          </div>
-          <Link 
-            to="/catalog" 
-            onClick={(e) => handleProductClick(e, 'catalog')}
-            className="hidden md:inline-flex items-center gap-2 text-navy-600 font-medium hover:text-navy-700 transition-colors"
-          >
-            View All
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+      {/* 03. BRAND ESSENCE (INTERACTIVE STORY) */}
+      <section className="relative h-[80vh] flex items-center bg-navy-950 overflow-hidden">
+        <div className="absolute right-0 top-0 w-1/2 h-full opacity-20 grayscale">
+          <img src="/banner.jpg" alt="" className="w-full h-full object-cover" />
         </div>
 
-        {/* Product Grid - Mobile: 2 cols, Desktop: 4 cols */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-          {featuredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-            >
-              {/* Product Image */}
-              <div className="relative aspect-square overflow-hidden bg-gray-100">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                />
-                {/* Wishlist Button */}
-                <button 
-                  onClick={() => { if (requireAuth()) toggleWishlist(product); }} 
-                  className="absolute top-2 right-2 md:top-3 md:right-3 p-2 min-h-[36px] min-w-[36px] rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-all duration-200 hover:bg-white hover:scale-110 active:scale-95"
-                >
-                  <Heart className={`w-4 h-4 md:w-5 md:h-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                </button>
-                {/* New Badge */}
-                {product.isNew && (
-                  <span className="absolute top-2 left-2 md:top-3 md:left-3 px-2 py-1 md:px-3 bg-navy-600 text-white text-[10px] md:text-xs font-medium rounded-full">
-                    New
-                  </span>
-                )}
-              </div>
-              
-              {/* Product Info */}
-              <div className="p-3 md:p-4">
-                <Link 
-                  to={`/product/${product.id}`} 
-                  onClick={(e) => handleProductClick(e, product.id)}
-                  className="block"
-                >
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base mb-0.5 md:mb-1 truncate group-hover:text-navy-600 transition-colors">
-                    {product.name}
-                  </h3>
-                  <p className="text-xs md:text-sm text-gray-500 mb-2 md:mb-3">{product.category}</p>
-                </Link>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm md:text-lg font-bold text-gray-900">{formatPrice(product.price)}</span>
-                  <button 
-                    onClick={() => handleAddToCart(product)} 
-                    className="p-2 min-h-[36px] min-w-[36px] rounded-full bg-navy-600 text-white transition-all duration-200 hover:bg-navy-700 hover:scale-110 active:scale-95"
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  </button>
+        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full relative z-10">
+          <div className="max-w-3xl space-y-12">
+            <span className="text-[11px] font-bold tracking-[1em] text-white/30 uppercase">The DNA</span>
+            <h3 className="text-5xl lg:text-8xl font-black tracking-tighter text-white leading-[0.9] uppercase">
+              WE STYLE<br />
+              <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20">FOR THE BOLD.</span>
+            </h3>
+            <p className="text-xl text-white/50 leading-relaxed font-light max-w-xl">
+              Cozzy.co is more than a label. It's a statement of minimalist defiance. No filler, only pure essence.
+            </p>
+            <div className="pt-8">
+              <Link to="/about" className="inline-flex items-center gap-6 group">
+                <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white group-hover:bg-white transition-all duration-700">
+                  <Plus className="w-6 h-6 text-white group-hover:text-navy-950" />
                 </div>
-              </div>
+                <span className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">Discover Our Story</span>
+              </Link>
             </div>
-          ))}
-        </div>
-
-        {/* Mobile View All Link */}
-        <div className="mt-6 text-center md:hidden">
-          <Link 
-            to="/catalog" 
-            onClick={(e) => handleProductClick(e, 'catalog')}
-            className="inline-flex items-center gap-2 text-navy-600 font-medium hover:text-navy-700 transition-colors"
-          >
-            View All Products
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Brand Vibe Section */}
-      <section className="w-full bg-navy-900 py-12 md:py-20 px-5 md:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6 leading-tight">
-            Anti-Gravity.<br className="md:hidden" /> Effortless.<br className="hidden md:block" /> Gen-Z.
-          </h2>
-          <p className="text-sm md:text-lg text-white/70 max-w-lg mx-auto mb-6 md:mb-8 leading-relaxed">
-            We craft streetwear that moves with you. Premium fabrics, minimalist designs, 
-            and that unmistakable cozzy comfort.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/about"
-              onClick={(e) => handleProductClick(e, 'about')}
-              className="min-h-[48px] inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-navy-900 rounded-xl font-semibold transition-all duration-300 hover:bg-gray-100 hover:-translate-y-0.5 active:scale-95"
-            >
-              Our Story
-            </Link>
-            <Link
-              to="/catalog"
-              onClick={(e) => handleProductClick(e, 'catalog')}
-              className="min-h-[48px] inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white border border-white/30 rounded-xl font-medium transition-all duration-300 hover:bg-white/20 hover:-translate-y-0.5 active:scale-95"
-            >
-              Shop Now
-              <ArrowRight className="w-5 h-5" />
-            </Link>
           </div>
         </div>
       </section>
+
+      {/* 04. CATEGORY INTERACTION */}
+      <section className="grid grid-cols-1 lg:grid-cols-2">
+        <Link
+          to="/catalog?category=Hoodie"
+          className="group relative h-[70vh] bg-gray-100 overflow-hidden border-r border-black/5"
+        >
+          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700 z-10" />
+          <img src="/kataloghoodie.png" alt="Hoodies" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
+          <div className="relative z-20 h-full flex flex-col justify-end p-12 lg:p-24 space-y-6">
+            <span className="text-[10px] font-bold tracking-[1em] text-white/60 uppercase">Collection — 01</span>
+            <h4 className="text-6xl lg:text-8xl font-black text-white tracking-tighter uppercase italic translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-expo">Hoodies.</h4>
+          </div>
+        </Link>
+
+        <Link
+          to="/catalog?category=T-Shirt"
+          className="group relative h-[70vh] bg-gray-200 overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700 z-10" />
+          <img src="/katalogts.png" alt="T-Shirts" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
+          <div className="relative z-20 h-full flex flex-col justify-end p-12 lg:p-24 space-y-6">
+            <span className="text-[10px] font-bold tracking-[1em] text-white/60 uppercase">Collection — 02</span>
+            <h4 className="text-6xl lg:text-8xl font-black text-white tracking-tighter uppercase italic translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-expo">T-Shirts.</h4>
+          </div>
+        </Link>
+      </section>
+
+
+      <style>{`
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .ease-expo { transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
+        .vertical-lr { writing-mode: vertical-lr; }
+        .bg-navy-950 { background-color: #030816; }
+      `}</style>
     </div>
   );
 };

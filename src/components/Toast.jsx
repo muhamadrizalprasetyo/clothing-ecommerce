@@ -39,6 +39,7 @@ const ToastItem = ({ toast, onClose }) => {
         hover:shadow-xl
         border border-white/10
       `}
+      data-toast-id={toast.id}
       style={{
         animation: 'slideInRight 0.3s ease-out'
       }}
@@ -99,9 +100,9 @@ const Toast = () => {
           animation: slideOutRight 0.3s ease-in forwards;
         }
       `}</style>
-      
+
       {/* Toast Stack */}
-      <div 
+      <div
         className="fixed top-4 right-4 z-[9999] flex flex-col gap-2"
         aria-live="polite"
         aria-atomic="true"
