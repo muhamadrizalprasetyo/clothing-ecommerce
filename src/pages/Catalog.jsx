@@ -22,8 +22,8 @@ const Catalog = () => {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(query) || 
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(query) ||
         p.category.toLowerCase().includes(query) ||
         p.description.toLowerCase().includes(query)
       );
@@ -52,7 +52,7 @@ const Catalog = () => {
   // Check auth before allowing actions - redirect to login if guest
   const requireAuth = () => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate('/register');
       return false;
     }
     return true;
@@ -66,7 +66,7 @@ const Catalog = () => {
   const handleProductClick = (e) => {
     if (!isLoggedIn) {
       e.preventDefault();
-      navigate('/login');
+      navigate('/register');
     }
   };
 
@@ -85,7 +85,7 @@ const Catalog = () => {
       <div className="border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Shop All</h1>
-          
+
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="max-w-xl">
             <div className="relative">
@@ -120,11 +120,10 @@ const Catalog = () => {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 ${
-                  selectedCategory === cat.id
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 active:scale-95 ${selectedCategory === cat.id
                     ? 'bg-navy-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                  }`}
               >
                 {cat.name}
               </button>
@@ -150,9 +149,8 @@ const Catalog = () => {
                   <button
                     key={opt.value}
                     onClick={() => setSortBy(opt.value)}
-                    className={`w-full text-left px-4 py-2 text-sm transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl ${
-                      sortBy === opt.value ? 'bg-navy-50 text-navy-600' : 'text-gray-600 hover:bg-gray-50'
-                    }`}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl ${sortBy === opt.value ? 'bg-navy-50 text-navy-600' : 'text-gray-600 hover:bg-gray-50'
+                      }`}
                   >
                     {opt.label}
                   </button>
@@ -193,17 +191,15 @@ const Catalog = () => {
 
         {/* Product Grid */}
         {filteredProducts.length > 0 ? (
-          <div className={`grid gap-6 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+          <div className={`grid gap-6 ${viewMode === 'grid'
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
               : 'grid-cols-1'
-          }`}>
+            }`}>
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className={`group bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${
-                  viewMode === 'list' ? 'flex' : ''
-                }`}
+                className={`group bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl ${viewMode === 'list' ? 'flex' : ''
+                  }`}
               >
                 {/* Image */}
                 <div className={`relative overflow-hidden bg-gray-100 ${viewMode === 'list' ? 'w-48 h-48' : 'aspect-square'}`}>
@@ -231,18 +227,18 @@ const Catalog = () => {
                     <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-navy-600 transition-colors">{product.name}</h3>
                     <p className="text-sm text-gray-500 mb-2">{product.category}</p>
                   </Link>
-                  
+
                   {viewMode === 'list' && (
                     <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p>
                   )}
-                  
+
                   <div className="mt-auto flex items-center justify-between">
                     <span className="text-lg font-bold text-gray-900">{formatPrice(product.price)}</span>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      className="p-2 rounded-full bg-navy-600 text-white transition-all duration-200 hover:bg-navy-700 hover:scale-110 active:scale-95"
+                      className="px-4 py-2 rounded-full bg-navy-600 text-white text-[10px] font-bold tracking-widest uppercase transition-all duration-200 hover:bg-navy-700 hover:scale-105 active:scale-95"
                     >
-                      <ShoppingBag className="w-4 h-4" />
+                      {isLoggedIn ? 'Add to Cart' : 'Join to Unlock'}
                     </button>
                   </div>
                 </div>

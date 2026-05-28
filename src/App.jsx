@@ -21,6 +21,7 @@ import Checkout from './pages/Checkout';
 import Receipt from './pages/Receipt';
 import EditAccount from './pages/EditAccount';
 import Orders from './pages/Orders';
+import Gallery from './pages/Gallery';
 
 // Routes configuration:
 // - Public: /, /catalog (browse only), /login, /register
@@ -58,6 +59,7 @@ function App() {
               />
 
               <Route path="/catalog" element={<Catalog />} />
+              <Route path="/gallery" element={<Gallery />} />
 
               {/* Protected Routes - Authentication Required */}
               <Route

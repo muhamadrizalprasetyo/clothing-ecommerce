@@ -154,17 +154,18 @@ export const StoreProvider = ({ children }) => {
     return user;
   }, []);
 
-  const register = useCallback((name, email, password) => {
+  const register = useCallback((name, email, password, metadata = {}) => {
     // Mock register - in real app, create in backend
     const user = {
       ...initialUser,
       name,
       email,
+      ...metadata,
       id: `user_${Date.now()}`,
       cozzyCash: 500000 // Give new users 500k Cozzy Cash
     };
     setCurrentUser(user);
-    toastSystem.notify('Account created! You got Rp 500,000 Cozzy Cash!', 'success');
+    toastSystem.notify('Identity Created! You got Rp 500,000 Cozzy Cash!', 'success');
     return user;
   }, []);
 

@@ -10,8 +10,8 @@ export const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (!isLoggedIn) {
-    // Redirect to login, saving the attempted URL for redirect after login
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    // Redirect to register, saving the attempted URL for redirect after join
+    return <Navigate to="/register" state={{ from: location.pathname }} replace />;
   }
 
   return children;

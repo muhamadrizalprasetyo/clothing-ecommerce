@@ -31,13 +31,14 @@ const Navbar = () => {
     logout();
     setIsProfileOpen(false);
     setIsMobileMenuOpen(false);
+    navigate('/register');
   };
 
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/catalog', label: 'Shop' },
-    { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' }
+    { path: '/catalog', label: 'Product' },
+    { path: '/gallery', label: 'Gallery' },
+    { path: '/about', label: 'About Us' },
   ];
 
   const formatCash = (amount) => {
@@ -66,9 +67,9 @@ const Navbar = () => {
               className="flex items-center group active:scale-95 transition-all duration-300"
             >
               <img
-                src="/logo1.png"
+                src="/public/cozzy/logobgnavy.png"
                 alt="COZZY"
-                className="h-8 lg:h-9 w-auto object-contain opacity-90 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100 drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                className="h-8 lg:h-9 w-auto object-contain transition-all duration-700 group-hover:scale-105"
               />
             </Link>
 
@@ -232,20 +233,12 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div className="hidden sm:flex items-center gap-4">
-                  <Link
-                    to="/login"
-                    className="px-6 py-3 text-[10px] font-bold tracking-[0.2em] text-white/50 hover:text-white transition-all duration-500 uppercase"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="px-8 py-3 text-[10px] font-bold tracking-[0.2em] text-navy-900 bg-white rounded-full hover:bg-white/90 hover:scale-105 transition-all duration-500 uppercase shadow-lg shadow-white/10"
-                  >
-                    Join
-                  </Link>
-                </div>
+                <Link
+                  to="/register"
+                  className="px-8 py-3 text-[10px] font-bold tracking-[0.2em] text-navy-900 bg-white rounded-full hover:bg-white/90 hover:scale-105 transition-all duration-500 uppercase shadow-lg shadow-white/10"
+                >
+                  Register
+                </Link>
               )}
 
               {/* Mobile Trigger */}
@@ -287,16 +280,10 @@ const Navbar = () => {
               {!isLoggedIn ? (
                 <div className="pt-12 border-t border-white/5 space-y-6">
                   <Link
-                    to="/login"
-                    className="block text-2xl font-light text-white/50"
-                  >
-                    SIGN IN
-                  </Link>
-                  <Link
                     to="/register"
-                    className="block text-2xl font-bold text-white"
+                    className="block text-2xl font-bold text-white uppercase tracking-tighter"
                   >
-                    CREATE ACCOUNT
+                    REGISTER ACCOUNT
                   </Link>
                 </div>
               ) : (
