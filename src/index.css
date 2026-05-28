@@ -81,6 +81,44 @@ body {
   color: white;
 }
 
+/* Custom Cursor for premium feel */
+@media (min-width: 1024px) {
+  body {
+    cursor: none;
+  }
+  
+  .custom-cursor {
+    width: 20px;
+    height: 20px;
+    background: rgba(3, 8, 22, 0.2);
+    border: 1.5px solid rgba(3, 8, 22, 0.5);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease-out, background 0.3s ease;
+    transform: translate(-50%, -50%);
+  }
+
+  .custom-cursor-follower {
+    width: 40px;
+    height: 40px;
+    background: rgba(3, 8, 22, 0.05);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.2s ease-out;
+    transform: translate(-50%, -50%);
+  }
+
+  a:hover ~ .custom-cursor,
+  button:hover ~ .custom-cursor {
+    transform: translate(-50%, -50%) scale(2);
+    background: rgba(3, 8, 22, 0.1);
+  }
+}
+
 /* Image loading placeholder */
 img {
   background-color: #f7fafc;

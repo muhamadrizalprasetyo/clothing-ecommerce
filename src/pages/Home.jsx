@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { formatPrice } from '../data/mockData';
-import { ArrowUpRight, ShoppingBag, Heart, Plus, Sparkles, ChevronRight, Play } from 'lucide-react';
+import { ArrowUpRight, Heart, Plus, Sparkles, ChevronRight, Play, ArrowRight, Instagram } from 'lucide-react';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -31,149 +31,138 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white selection:bg-navy-900 selection:text-white">
-      {/* 01. CINEMATIC HERO SECTION */}
+    <div className="min-h-screen bg-white selection:bg-black selection:text-white pb-0">
+      {/* 01. EDITORIAL HERO SECTION */}
       <section
         ref={heroRef}
-        className="relative h-[110vh] w-full overflow-hidden flex items-center justify-center bg-black"
+        className="relative h-screen min-h-[700px] w-full overflow-hidden flex items-center bg-[#050505]"
       >
         {/* Background Image with Parallax */}
         <div
           className="absolute inset-0 z-0 transition-transform duration-700 ease-out scale-110"
           style={{
-            transform: `translate(${mousePos.x * 30}px, ${mousePos.y * 30}px) scale(1.1)`,
+            transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px) scale(1.1)`,
             backgroundImage: "url('/banner.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
         >
-          {/* Creative Overlay Grid */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-white" />
+          {/* Subtle vignette/overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 w-full max-w-[1440px] px-6 lg:px-12 text-center mt-[-10vh]">
-          <div className="inline-flex items-center gap-4 px-6 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md mb-12 animate-fade-in-up">
-            <Sparkles className="w-4 h-4 text-white" />
-            <span className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">New Drop — Collection '24</span>
-          </div>
+        {/* Hero Content - Left Aligned, Editorial Style */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 lg:px-12 pt-20">
+          <div className="max-w-3xl space-y-8 animate-fade-in-up">
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              </span>
+              <span className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">Archive 01 — Live</span>
+            </div>
 
-          <h1 className="text-[12vw] lg:text-[10vw] font-black leading-[0.85] tracking-tighter text-white uppercase italic mix-blend-overlay opacity-50 absolute inset-0 flex items-center justify-center whitespace-nowrap select-none">
-            STYLE COZZY
-          </h1>
+            <h1 className="text-6xl sm:text-7xl lg:text-[100px] font-black tracking-tighter text-white leading-[0.9] uppercase drop-shadow-2xl">
+              FUTURE<br />
+              <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white/50">CLASSICS.</span>
+            </h1>
 
-          <div className="relative space-y-8 max-w-4xl mx-auto">
-            <h2 className="text-5xl lg:text-9xl font-black tracking-tighter text-white leading-none uppercase">
-              REDEFINE<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/50 to-white/10 italic">MINIMALISM.</span>
-            </h2>
-
-            <p className="text-lg lg:text-xl text-white/70 max-w-xl mx-auto font-light leading-relaxed tracking-wide">
-              Crafted for the modern aesthetic. Low-impact materials, high-impact style.
+            <p className="text-lg text-white/80 max-w-lg font-light leading-relaxed tracking-wide drop-shadow-md">
+              Redefining streetwear for the bold. Premium heavyweight cotton, oversized fits, uncompromising aesthetic.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-12">
+            <div className="flex flex-wrap items-center gap-6 pt-6">
               <button
                 onClick={handleShopCollection}
-                className="group relative px-12 py-5 bg-white text-navy-950 font-bold tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95"
+                className="group relative px-10 py-5 bg-white text-black font-bold tracking-[0.2em] uppercase overflow-hidden transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl"
               >
                 <span className="relative z-10 flex items-center gap-3">
-                  Shop Gallery <ArrowUpRight className="w-4 h-4" />
+                  Shop The Drop <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </span>
-                <div className="absolute inset-0 bg-navy-950/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-              </button>
-
-              <button className="flex items-center gap-4 text-white hover:text-white/70 transition-all font-bold tracking-[0.2em] uppercase text-xs">
-                <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center">
-                  <Play className="w-4 h-4 fill-white" />
-                </div>
-                View Film
+                <div className="absolute inset-0 bg-gray-200 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-bounce">
-          <div className="w-[1px] h-24 bg-gradient-to-b from-white/50 to-transparent" />
-          <span className="text-[10px] font-bold tracking-[0.4em] text-white/50 uppercase vertical-lr">Scroll</span>
+        <div className="absolute bottom-12 right-12 hidden lg:flex flex-col items-center gap-4 animate-fade-in-up delay-[1000ms]">
+          <span className="text-[10px] font-bold tracking-[0.4em] text-white/50 uppercase vertical-lr mb-4">Discover</span>
+          <div className="w-[1px] h-20 bg-white/20 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[50%] bg-white animate-scroll-down" />
+          </div>
         </div>
       </section>
 
-      {/* 02. CURATED GALLERY SECTION */}
-      <section className="py-32 lg:py-56 bg-white overflow-hidden">
+      {/* 02. CLEAN GRID GALLERY */}
+      <section className="py-24 lg:py-40 bg-white">
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
           {/* Section Header */}
-          <div className="flex flex-col lg:flex-row items-end justify-between gap-12 mb-24 lg:mb-32">
-            <div className="max-w-2xl space-y-6">
-              <span className="text-[11px] font-bold tracking-[.8em] text-navy-900/40 uppercase">Elite Curations</span>
-              <h3 className="text-6xl lg:text-8xl font-black tracking-tighter text-black uppercase leading-none">
-                LATEST<br />RELEASES.
-              </h3>
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-20">
+            <div className="space-y-4">
+              <p className="text-[10px] font-bold tracking-[0.4em] text-gray-400 uppercase">Season 1</p>
+              <h2 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-black uppercase">
+                ESSENTIALS.
+              </h2>
             </div>
             <Link
               to="/catalog"
-              className="group flex items-center gap-4 text-[10px] font-bold tracking-[0.4em] text-black uppercase pb-4 border-b border-black/10 hover:border-black transition-all"
+              className="group flex items-center gap-3 text-[10px] font-bold tracking-[0.3em] text-black uppercase pb-2 border-b-2 border-black/10 hover:border-black transition-all"
             >
-              Examine All <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+              View Full Archive <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
             </Link>
           </div>
 
-          {/* Staggered Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-            {featuredProducts.map((product, index) => (
-              <div
-                key={product.id}
-                className={`group relative ${index % 2 !== 0 ? 'lg:mt-32' : ''}`}
-              >
-                {/* Product Card */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 border border-black/5 hover:border-black/10 transition-all duration-700">
+          {/* Minimalist Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+            {featuredProducts.map((product) => (
+              <div key={product.id} className="group relative">
+                {/* Product Image */}
+                <div className="relative aspect-[3/4] bg-[#F7F7F7] overflow-hidden mb-6">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
 
-                  {/* Floating Rank Background */}
-                  <span className="absolute top-12 -left-4 text-[12vw] font-black text-black/5 select-none leading-none">
-                    0{index + 1}
-                  </span>
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                  {/* Actions Overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-700" />
-
-                  <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-expo">
-                    <button
-                      onClick={() => addToCart(product, product.sizes[0], product.colors[0], 1)}
-                      className="w-full py-5 bg-white text-navy-950 font-bold text-[10px] tracking-[0.4em] uppercase shadow-2xl hover:bg-navy-950 hover:text-white transition-all duration-300"
-                    >
-                      Instant Purchase
-                    </button>
-                  </div>
-
-                  {/* Favorite Button */}
+                  {/* Heart Button */}
                   <button
                     onClick={() => toggleWishlist(product)}
-                    className="absolute top-8 right-8 p-4 bg-white/90 backdrop-blur-md rounded-full shadow-xl transition-all duration-500 hover:scale-110 active:scale-90"
+                    className="absolute top-4 right-4 p-3 bg-white shadow-sm rounded-full opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:scale-110 active:scale-95"
                   >
-                    <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-navy-950'}`} />
+                    <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
                   </button>
+
+                  {/* Add to Cart Quick Action */}
+                  <button
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    className="absolute bottom-0 left-0 right-0 py-5 bg-black text-white text-[10px] font-bold tracking-[0.2em] uppercase translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center gap-2"
+                  >
+                    View Details
+                  </button>
+
+                  {product.isNew && (
+                    <span className="absolute top-4 left-4 bg-black text-white text-[9px] font-bold tracking-widest px-3 py-1.5 uppercase">
+                      New
+                    </span>
+                  )}
                 </div>
 
                 {/* Product Info */}
-                <div className="pt-10 space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <h4 className="text-[10px] font-bold tracking-[.3em] text-black/30 uppercase">{product.category}</h4>
-                      <Link to={`/product/${product.id}`} className="block">
-                        <h3 className="text-xl font-bold tracking-tight text-black group-hover:text-black/60 transition-colors uppercase">
-                          {product.name}
-                        </h3>
-                      </Link>
-                    </div>
-                    <span className="text-lg font-bold tracking-tighter text-black">{formatPrice(product.price)}</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-start gap-4">
+                    <Link to={`/product/${product.id}`} className="block">
+                      <h3 className="font-bold text-lg leading-tight uppercase hover:text-gray-500 transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <span className="font-medium text-black whitespace-nowrap">{formatPrice(product.price)}</span>
                   </div>
+                  <p className="text-[11px] font-bold tracking-wider text-gray-400 uppercase">{product.category}</p>
                 </div>
               </div>
             ))}
@@ -181,80 +170,67 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 03. BRAND ESSENCE (INTERACTIVE STORY) */}
-      <section className="relative h-[80vh] flex items-center bg-navy-950 overflow-hidden">
-        <div className="absolute right-0 top-0 w-1/2 h-full opacity-20 grayscale">
-          <img src="/banner.jpg" alt="" className="w-full h-full object-cover" />
+      {/* 03. FULL WIDTH STATEMENT */}
+      <section className="relative h-[60vh] bg-black overflow-hidden flex items-center justify-center">
+        <div className="absolute inset-0 opacity-40">
+          <img src="/banner.jpg" alt="" className="w-full h-full object-cover grayscale" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="relative z-10 text-center px-6">
+          <h2 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase italic">
+            NOT JUST CLOTHING.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/30 text-4xl md:text-6xl lg:text-8xl block mt-2 not-italic font-black">A MOVEMENT.</span>
+          </h2>
+        </div>
+      </section>
 
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full relative z-10">
-          <div className="max-w-3xl space-y-12">
-            <span className="text-[11px] font-bold tracking-[1em] text-white/30 uppercase">The DNA</span>
-            <h3 className="text-5xl lg:text-8xl font-black tracking-tighter text-white leading-[0.9] uppercase">
-              WE STYLE<br />
-              <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20">FOR THE BOLD.</span>
-            </h3>
-            <p className="text-xl text-white/50 leading-relaxed font-light max-w-xl">
-              Cozzy.co is more than a label. It's a statement of minimalist defiance. No filler, only pure essence.
-            </p>
-            <div className="pt-8">
-              <Link to="/about" className="inline-flex items-center gap-6 group">
-                <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white group-hover:bg-white transition-all duration-700">
-                  <Plus className="w-6 h-6 text-white group-hover:text-navy-950" />
-                </div>
-                <span className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">Discover Our Story</span>
-              </Link>
+      {/* 04. VIBE / CATEGORY PANELS */}
+      <section className="grid grid-cols-1 md:grid-cols-2">
+        <Link to="/catalog?category=Hoodie" className="group relative h-[40vh] md:h-[50vh] block overflow-hidden bg-black/10">
+          <img src="/kataloghoodie.png" alt="Hoodies" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.4em] text-white/60 uppercase mb-3">Collection 01</p>
+              <h3 className="text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter italic">Hoodies.</h3>
+            </div>
+            <div className="w-14 h-14 rounded-full border-2 border-white/30 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500 text-white shadow-xl">
+              <ArrowUpRight className="w-6 h-6" />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* 04. CATEGORY INTERACTION */}
-      <section className="grid grid-cols-1 lg:grid-cols-2">
-        <Link
-          to="/catalog?category=Hoodie"
-          className="group relative h-[70vh] bg-gray-100 overflow-hidden border-r border-black/5"
-        >
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700 z-10" />
-          <img src="/kataloghoodie.png" alt="Hoodies" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
-          <div className="relative z-20 h-full flex flex-col justify-end p-12 lg:p-24 space-y-6">
-            <span className="text-[10px] font-bold tracking-[1em] text-white/60 uppercase">Collection — 01</span>
-            <h4 className="text-6xl lg:text-8xl font-black text-white tracking-tighter uppercase italic translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-expo">Hoodies.</h4>
-          </div>
         </Link>
-
-        <Link
-          to="/catalog?category=T-Shirt"
-          className="group relative h-[70vh] bg-gray-200 overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700 z-10" />
-          <img src="/katalogts.png" alt="T-Shirts" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
-          <div className="relative z-20 h-full flex flex-col justify-end p-12 lg:p-24 space-y-6">
-            <span className="text-[10px] font-bold tracking-[1em] text-white/60 uppercase">Collection — 02</span>
-            <h4 className="text-6xl lg:text-8xl font-black text-white tracking-tighter uppercase italic translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-expo">T-Shirts.</h4>
+        <Link to="/catalog?category=T-Shirt" className="group relative h-[40vh] md:h-[50vh] block overflow-hidden bg-black/10">
+          <img src="/katalogts.png" alt="T-Shirts" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.4em] text-white/60 uppercase mb-3">Collection 02</p>
+              <h3 className="text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter italic">T-Shirts.</h3>
+            </div>
+            <div className="w-14 h-14 rounded-full border-2 border-white/30 flex items-center justify-center group-hover:bg-white group-hover:text-black group-hover:scale-110 transition-all duration-500 text-white shadow-xl">
+              <ArrowUpRight className="w-6 h-6" />
+            </div>
           </div>
         </Link>
       </section>
-
 
       <style>{`
         @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up {
-          animation: fade-in-up 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+          animation: fade-in-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
+        @keyframes scroll-down {
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(200%); opacity: 0; }
         }
-        @keyframes marquee {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+        .animate-scroll-down {
+          animation: scroll-down 2s ease-in-out infinite;
         }
-        .ease-expo { transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
         .vertical-lr { writing-mode: vertical-lr; }
-        .bg-navy-950 { background-color: #030816; }
       `}</style>
     </div>
   );

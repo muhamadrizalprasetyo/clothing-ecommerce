@@ -4,6 +4,8 @@ import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Toast from './components/Toast';
 import Footer from './components/Footer';
+import FloatingWA from './components/FloatingWA';
+import CustomCursor from './components/CustomCursor';
 
 // Pages
 import Home from './pages/Home';
@@ -31,119 +33,121 @@ function App() {
         <div className="min-h-screen bg-white flex flex-col">
           <Navbar />
           <Toast />
-          
+
           <main className="flex-1 transition-all duration-300">
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
-              
-              <Route 
-                path="/login" 
+
+              <Route
+                path="/login"
                 element={
                   <PublicRoute>
                     <Login />
                   </PublicRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/register" 
+
+              <Route
+                path="/register"
                 element={
                   <PublicRoute>
                     <Register />
                   </PublicRoute>
-                } 
+                }
               />
-              
+
               <Route path="/catalog" element={<Catalog />} />
-              
+
               {/* Protected Routes - Authentication Required */}
-              <Route 
-                path="/product/:id" 
+              <Route
+                path="/product/:id"
                 element={
                   <ProtectedRoute>
                     <ProductDetail />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/about" 
+              <Route
+                path="/about"
                 element={
                   <ProtectedRoute>
                     <About />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/contact" 
+              <Route
+                path="/contact"
                 element={
                   <ProtectedRoute>
                     <Contact />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* Protected Routes */}
-              <Route 
-                path="/wishlist" 
+              <Route
+                path="/wishlist"
                 element={
                   <ProtectedRoute>
                     <Wishlist />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/cart" 
+
+              <Route
+                path="/cart"
                 element={
                   <ProtectedRoute>
                     <Cart />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/checkout" 
+
+              <Route
+                path="/checkout"
                 element={
                   <ProtectedRoute>
                     <Checkout />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/receipt/:orderId" 
+
+              <Route
+                path="/receipt/:orderId"
                 element={
                   <ProtectedRoute>
                     <Receipt />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/account" 
+
+              <Route
+                path="/account"
                 element={
                   <ProtectedRoute>
                     <EditAccount />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
-              <Route 
-                path="/orders" 
+
+              <Route
+                path="/orders"
                 element={
                   <ProtectedRoute>
                     <Orders />
                   </ProtectedRoute>
-                } 
+                }
               />
-              
+
               {/* 404 Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          
+
           <Footer />
+          <FloatingWA />
+          <CustomCursor />
         </div>
       </Router>
     </StoreProvider>
