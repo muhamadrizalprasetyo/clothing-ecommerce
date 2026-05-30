@@ -30,7 +30,7 @@ import Gallery from './pages/Gallery';
 function App() {
   return (
     <StoreProvider>
-      <Router basename="/clothing-ecommerce/">
+      <Router>
         <div className="min-h-screen bg-white flex flex-col">
           <Navbar />
           <Toast />

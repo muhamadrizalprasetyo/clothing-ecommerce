@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Sparkles, MapPin, Hash, Phone, Building2 } from 'lucide-react';
 
